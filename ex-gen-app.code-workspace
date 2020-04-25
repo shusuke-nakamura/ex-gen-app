@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "..\\node-app"
+		},
+		{
+			"path": "..\\mini_board"
+		},
+		{
+			"path": "..\\express-app"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}
