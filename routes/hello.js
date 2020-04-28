@@ -1,29 +1,35 @@
 var express = require('express');
 var router = express.Router();
 
-router.get('/', (req, res, next) => {
-  // var name = req.query.name;
-  // var mail = req.query.mail;
-  var msg = "※何か書いて送信して下さい。";
-  if (req.session.message != undefined) {
-    msg = "Last Message: " + req.session.message;
-  }
-  var data = {
-    title: 'Hello!',
-    // content: 'あなたの名前は、' + name + '。<br>' + 'メールアドレスは、' + mail + 'です。'
-    content: msg
-  };
-  res.render('hello', data);
-});
+var mysql = require('mysql');
 
-router.post('/post', (req, res, next) => {
-  var msg = req.body['message'];
-  req.session.message = msg;
-  var data = {
-    title: 'Hello!',
-    content: "Last Message: " + req.session.message
-  };
-  res.render('hello', data);
+// MySQLの設定情報
+var mysql_setting = {
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'my-nodeapp-db'
+};
+
+router.get('/', (req, res, next) => {
+
+  // コネクションの用意
+  var connection = mysql.createConnection(mysql_setting);
+
+  // データベースに接続
+  connection.connect();
+
+  // データを取り出す
+  connection.query('SELECT * FROM mydata', function (error, results, fields) { 
+    // データベースアクセス完了時の処理
+    if (error == null) {
+      var data = { title: 'mysql', content: results };
+      res.render('hello', data);
+    }
+  });
+
+  // 接続の解除
+  connection.end();
 });
 
 module.exports = router;
