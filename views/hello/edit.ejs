@@ -1,0 +1,44 @@
+<html lang="ja">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+  <head>
+    <h1><%= title %></h1>
+  </head>
+  <div role="main">
+    <p><%= content %></p>
+    <form action="/hello/edit" method="post">
+      <input type="hidden" name="id" value="<%= mydata.id %>">
+      <table>
+        <tr>
+          <th>NAME</th>
+          <td>
+            <input type="text" name="name" id="name" value="<%= mydata.name %>">
+          </td>
+        </tr>
+        <tr>
+          <th>MAIL</th>
+          <td>
+            <input type="text" name="mail" id="mail" value="<%= mydata.mail %>">
+          </td>
+        </tr>
+        <tr>
+          <th>AGE</th>
+          <td>
+            <input type="number" name="age" id="age" value="<%= mydata.age %>">
+          </td>
+        </tr>
+        <tr>
+          <th></th>
+          <td>
+            <input type="submit" value="更新">
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+</body>
+</html>
