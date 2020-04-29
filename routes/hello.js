@@ -118,4 +118,40 @@ router.post('/edit', (req, res, next) => {
   connection.end();
 });
 
+// 指定レコードの削除
+router.get('/delete', (req, res, next) => {
+  var id = req.query.id;
+
+  var connection = mysql.createConnection(mysql_setting);
+
+  connection.connect();
+
+  connection.query('SELECT * FROM mydata WHERE id = ?', id, function (error, results, fields) {
+    if (error == null) {
+      var data = {
+        title: 'Hello/delete',
+        content: 'id = ' + id + ' のレコード:',
+        mydata: results[0]
+      }
+      res.render('hello/delete', data);
+    }
+  });
+  connection.end();
+});
+
+// 削除フォーム送信の処理
+router.post('/delete', (req, res, next) => {
+  var id = req.body.id;
+
+  var connection = mysql.createConnection(mysql_setting);
+  connection.connect();
+
+  connection.query('DELETE FROM mydata WHERE id = ?', id, function (error, results, fields) {
+    res.redirect('/hello');
+  });
+
+  connection.end();
+});
+
+
 module.exports = router;
