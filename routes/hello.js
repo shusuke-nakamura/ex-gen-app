@@ -24,11 +24,39 @@ router.get('/', (req, res, next) => {
     // データベースアクセス完了時の処理
     if (error == null) {
       var data = { title: 'mysql', content: results };
-      res.render('hello', data);
+      res.render('hello/index', data);
     }
   });
 
   // 接続の解除
+  connection.end();
+});
+
+// 新規登録ページへのアクセス
+router.get('/add', (req, res, next) => {
+  var data = {
+    title: 'Hello/Add',
+    content: '新しいレコードを入力:'
+  };
+  res.render('hello/add', data);
+});
+
+// 新規作成フォームの送信の処理
+router.post('/add', (req, res, next) => {
+  var nm = req.body.name;
+  var ml = req.body.mail;
+  var age = req.body.age;
+
+  var data = { 'name': nm, 'mail': ml, 'age': age };
+
+  var connection = mysql.createConnection(mysql_setting);
+
+  connection.connect();
+
+  connection.query('INSERT INTO mydata set ?', data, function (error, results, fields) {
+    res.redirect('/hello');
+  });
+
   connection.end();
 });
 
