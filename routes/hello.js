@@ -60,4 +60,23 @@ router.post('/add', (req, res, next) => {
   connection.end();
 });
 
+router.get('/show', (req, res, next) => {
+  var id = req.query.id;
+  var connection = mysql.createConnection(mysql_setting);
+
+  connection.connect();
+
+  connection.query('SELECT * FROM mydata where id=?', id, function (error, results, fields) {
+    if (error == null) {
+      var data = {
+        title: 'Hello/show',
+        content: 'id = ' + id + ' のレコード:',
+        mydata: results[0]
+      };
+      res.render('hello/show', data);
+    }
+  });
+  connection.end();
+});
+
 module.exports = router;
