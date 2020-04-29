@@ -11,6 +11,8 @@ var mysql_setting = {
   database: 'my-nodeapp-db'
 };
 
+const { check, validationResult } = require('express-validator');
+
 router.get('/', (req, res, next) => {
 
   // コネクションの用意
@@ -36,29 +38,55 @@ router.get('/', (req, res, next) => {
 router.get('/add', (req, res, next) => {
   var data = {
     title: 'Hello/Add',
-    content: '新しいレコードを入力:'
+    content: '新しいレコードを入力:',
+    form: {name: '', mail: '', age: 0}
   };
   res.render('hello/add', data);
 });
 
 // 新規作成フォームの送信の処理
-router.post('/add', (req, res, next) => {
-  var nm = req.body.name;
-  var ml = req.body.mail;
-  var age = req.body.age;
+router.post('/add', validateParam(), (req, res) => {
 
-  var data = { 'name': nm, 'mail': ml, 'age': age };
-
-  var connection = mysql.createConnection(mysql_setting);
-
-  connection.connect();
-
-  connection.query('INSERT INTO mydata set ?', data, function (error, results, fields) {
-    res.redirect('/hello');
-  });
-
-  connection.end();
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    var re = '<ul class="error">';
+    var result_arr = errors.array();
+    for (var n in result_arr) {
+      re += '<li>' + result_arr[n].msg + '</li>';
+    }
+    re += '</ul>';
+    var data = {
+      title: 'Hello/Add',
+      content: re,
+      form: req.body
+    };
+    res.render('hello/add', data);
+  } else {
+    var nm = req.body.name;
+    var ml = req.body.mail;
+    var age = req.body.age;
+  
+    var data = { 'name': nm, 'mail': ml, 'age': age };
+  
+    var connection = mysql.createConnection(mysql_setting);
+  
+    connection.connect();
+  
+    connection.query('INSERT INTO mydata set ?', data, function (error, results, fields) {
+      res.redirect('/hello');
+    });
+    connection.end();
+  }
 });
+
+// 入力チェックの定義
+function validateParam() {
+  return [
+    check('name').notEmpty().withMessage('NAME は必ず入力して下さい。'),
+    check('mail').isEmail().withMessage('MAIL はメールアドレスを記入して下さい。'),
+    check('age').isInt().withMessage('AGE は年齢(整数)を入力して下さい。')
+  ];
+}
 
 router.get('/show', (req, res, next) => {
   var id = req.query.id;
