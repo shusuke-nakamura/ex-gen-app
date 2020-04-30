@@ -11,28 +11,36 @@ var mysql_setting = {
   database: 'my-nodeapp-db'
 };
 
+var knex = require('knex')({
+  dialect: 'mysql',
+  connection: {
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'my-nodeapp-db',
+    charset: 'utf8'
+  }
+});
+
+var Bookshelf = require('bookshelf')(knex);
+
+var MyData = Bookshelf.Model.extend({
+  tableName: 'mydata'
+});
+
 const { check, validationResult } = require('express-validator');
 
 router.get('/', (req, res, next) => {
-
-  // コネクションの用意
-  var connection = mysql.createConnection(mysql_setting);
-
-  // データベースに接続
-  connection.connect();
-
-  // データを取り出す
-  connection.query('SELECT * FROM mydata', function (error, results, fields) { 
-    // データベースアクセス完了時の処理
-    if (error == null) {
-      var data = { title: 'mysql', content: results };
-      res.render('hello/index', data);
-    }
+  new MyData().fetchAll().then((collection) => {
+    var data = {
+      title: 'Hello',
+      content: collection.toArray()
+    };
+    res.render('hello/index', data);
+  }).catch((err) => {
+    res.status(500).json({ error: true, data: { message: err.message } });
   });
-
-  // 接続の解除
-  connection.end();
-});
+ });
 
 // 新規登録ページへのアクセス
 router.get('/add', (req, res, next) => {
