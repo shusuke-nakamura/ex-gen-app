@@ -70,20 +70,10 @@ router.post('/add', validateParam(), (req, res) => {
     };
     res.render('hello/add', data);
   } else {
-    var nm = req.body.name;
-    var ml = req.body.mail;
-    var age = req.body.age;
-  
-    var data = { 'name': nm, 'mail': ml, 'age': age };
-  
-    var connection = mysql.createConnection(mysql_setting);
-  
-    connection.connect();
-  
-    connection.query('INSERT INTO mydata set ?', data, function (error, results, fields) {
-      res.redirect('/hello');
-    });
-    connection.end();
+    var response = res;
+    new MyData(req.body).save().then((model) => {
+      response.redirect('/hello');
+    });  
   }
 });
 
