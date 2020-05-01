@@ -22,5 +22,14 @@
       <% } %>
     </table>
   </div>
+  <div>
+    <span><a href="/hello/1">&lt;&lt; First</a></span>
+    |
+    <span><a href="/hello/<%= pagination.page -1 %>">&lt;&lt; prev</a></span>
+    |
+    <span><a href="/hello/<%= pagination.page +1 %>">Next &gt;&gt;</a></span>
+    |
+    <span><a href="/hello/<%= pagination.pageCount %>">Last &gt;&gt;</a></span>
+  </div>
 </body>
 </html>

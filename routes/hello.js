@@ -28,13 +28,17 @@ var MyData = Bookshelf.Model.extend({
   tableName: 'mydata'
 });
 
+Bookshelf.plugin('pagination');
+
 const { check, validationResult } = require('express-validator');
 
 router.get('/', (req, res, next) => {
-  new MyData().fetchAll().then((collection) => {
+  //new MyData().fetchAll().then((collection) => {
+  new MyData().fetchPage({ page:1, pageSize:3 }).then((collection) => {  
     var data = {
       title: 'Hello',
-      content: collection.toArray()
+      content: collection.toArray(),
+      pagination: collection.pagination
     };
     res.render('hello/index', data);
   }).catch((err) => {
@@ -199,6 +203,23 @@ router.post('/find', (req, res, next) => {
     };
     res.render('hello/find', data);
   });
+});
+
+router.get('/:page', (req, res, next) => {
+  var pg = req.params.page;
+  pg *= 1;
+  if (pg < 1) { pg = 1 };
+  new MyData().fetchPage({ page:pg, pageSize:3 }).then((collection) => {
+    var data = {
+      title: 'Hello!',
+      content: collection.toArray(),
+      pagination: collection.pagination
+    };
+    console.log(collection.pagination);
+    res.render('hello/index', data);
+  }).catch((err) => {
+    res.status(500).json({error: true, data: {message: err.message}});
+  }); 
 });
 
 
